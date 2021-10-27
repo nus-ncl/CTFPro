@@ -1,0 +1,39 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NCL-CTF Site</title>
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'vms/dashboardstyle.css' %}">
+</head>
+<body>
+
+
+<div class="header">
+<h1>ncl-ctf </h1>
+<p>NCL Capture-the-Flag Provisioning Platform</p>
+</div>
+<p> </p>
+<table border="1" width="600">
+<tr>
+<td>Dashboard</td>
+</tr>
+<p> </p>
+
+</table>
+
+<p> </p>
+<p>Links</p>
+<p> </p>
+<p><a href="{% url 'index' %}">Summary</a></p>
+<p> </p>
+<p><a href="{% url 'components' %}">Components</a></p>
+<p> </p>
+<p><a href="{% url 'landpage' %}"> > Landing Page</a></p>
+<p><a href="{% url 'dashboard' %}"> > Dashboard</a></p>
+<p><a href="{% url 'challenges' %}"> > Challenges</a></p>
+<p><a href="{% url 'monitor' %}"> > Monitoring</a></p>
+<p> </p>
+<p><a href="{% url 'stats' %}">Statistics</a></p>
+
