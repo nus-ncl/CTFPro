@@ -1,3 +1,5 @@
+Steps on how to access the database:
+
 With docker installed as well as Dockerfile and ctfpro_dump.sql downloaded, in the same directory open a terminal and build an image by entering the command:
 build -t ctfpro_img:1.0
 
