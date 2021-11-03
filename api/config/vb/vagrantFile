@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
   config.vm.hostname = "ctfd-01"
   config.vm.network "private_network", ip: "172.30.1.5"
-  config.vm.provision "shell", path: "path_to_/install_ctfd.sh"
+  config.vm.provision "shell", path: "api/vb/install_ctfd.sh"
   
   config.vm.provider "virtualbox" do |v|
   v.name = "ctfd-01"
