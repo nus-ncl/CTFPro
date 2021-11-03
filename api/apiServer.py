@@ -15,35 +15,35 @@ def root():
     
 @app.get("/provision/vb/createInstance")
 def root():
-    vagrantfile = "/path/to/vb/vagrantfile"
+    vagrantfile = "api/config/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() 
     return  {"message": "Local Virtualbox Instance Provisoned."}
     
 @app.get("/provision/vb/deleteInstance")
 def root():
-    vagrantfile = "/path/to/vb/vagrantfile"
+    vagrantfile = "api/config/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.destroy() 
     return  {"message": "Local Virtualbox Instance Destroyed."}
     
 @app.get("/control/vb/startInstance")
 def root():
-    vagrantfile = "/path/to/vb/vagrantfile"
+    vagrantfile = "api/config/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() 
     return  {"message": "Local Virtualbox Instance Started"}
     
 @app.get("/control/vb/stopInstance")
 def root():
-    vagrantfile = "/path/to/vb/vagrantfile"
+    vagrantfile = "api/config/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.halt() 
     return  {"message": "Local Virtualbox Instance Halted."}
     
 @app.get("/resource/vb/statusInstance")
 def root():
-    vagrantfile = "/path/to/vb/vagrantfile"
+    vagrantfile = "api/config/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     return v.status()
     
@@ -51,7 +51,7 @@ def root():
 
 @app.get("/provision/aws/createInstance")
 def root():
-    vagrantfile = "/path/to/aws/vagrantfile"
+    vagrantfile = "api/config/aws"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() 
     return  {"message": "AWS Instance Provisoned."}
@@ -67,14 +67,14 @@ def root(ins_name: str):
     
 @app.get("/control/aws/startInstance")
 def root():
-    vagrantfile = "/path/to/aws/vagrantfile"
+    vagrantfile = "api/config/aws"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() 
     return  {"message": "AWS Instance Started"}
     
 @app.get("/control/aws/stopInstance")
 def root():
-    vagrantfile = "/path/to/aws/vagrantfile"
+    vagrantfile = "api/config/aws"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.halt() 
     return  {"message": "AWS Instance Halted."}
@@ -106,6 +106,3 @@ def root(ins_name: str):
             }
     json_object = json.dumps(ec2info, indent = 4) 
     return json_object
-    
-    
-    
