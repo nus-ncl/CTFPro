@@ -14,7 +14,7 @@ Vagrant.configure('2') do |config|
     aws.instance_type = "t2.micro"
     aws.security_groups = ["security-group-here"]
     aws.keypair_name = "key-pair-here"
-    aws.user_data = File.read("/path/to/user_data.txt")
+    aws.user_data = File.read("/api/scripts/user_data.txt")
     override.ssh.username = "ec2-user"
     override.ssh.private_key_path = "/path/to/your/.pem file"
     aws.block_device_mapping   = [
