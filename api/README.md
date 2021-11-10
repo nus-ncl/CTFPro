@@ -36,6 +36,7 @@ Install [awscli](https://github.com/aws/aws-cli/tree/v2).
 ```bash
 sudo apt update
 sudo apt-get install awscli -y
+sudo pip3 install --upgrade awscli
 ```
 
 Setup [awscli](https://github.com/aws/aws-cli/tree/v2).
