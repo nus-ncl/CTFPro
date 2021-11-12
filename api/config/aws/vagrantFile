@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Create and configure the AWS instance(s)
+Vagrant.configure('2') do |config|
+  config.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+  config.vm.box = 'dummy'
+  config.vm.hostname = "ctfd-01"
+
+  # Specify AWS provider configuration
+  config.vm.provider 'aws' do |aws, override|
+    aws.aws_profile = "default"
+    aws.ami = "ami-id depends on your region"
+    aws.instance_type = "t2.micro"
+    aws.security_groups = ["security-group-here"]
+    aws.keypair_name = "key-pair-here"
+    aws.user_data = File.read("/api/scripts/user_data.txt")
+    override.ssh.username = "ec2-user"
+    override.ssh.private_key_path = "/path/to/your/.pem file"
+    aws.block_device_mapping   = [
+      {
+        'DeviceName' => 'depends-on-your-device',
+        'Ebs.VolumeSize' => 30,
+        'Ebs.VolumeType' => 'gp2',
+        'Ebs.DeleteOnTermination' => true
+      }
+    ]
+    aws.tags = {
+      'Name' => 'ctfd', #Change as appropriate
+    }
+  end
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+end
