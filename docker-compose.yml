@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  mysql_dev:
+    image: mysql:8.0.27
+    environment:
+       MYSQL_DATABASE: ctfpro
+    ports:
+       - "3308:3306"
+
+  custom_mysql_cont:
+    image: ctfpro_img:1.0
+    ports:
+       - "3316:3306"

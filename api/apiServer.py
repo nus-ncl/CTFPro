@@ -51,7 +51,7 @@ def root():
 
 @app.get("/provision/aws/createInstance")
 def root():
-    vagrantfile = "api/config/aws"
+    vagrantfile = "/home/flak/Desktop/aws"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() # For creating an ec2 instance based on vagrantfile
     return  {"message": "AWS Instance Provisoned."}
