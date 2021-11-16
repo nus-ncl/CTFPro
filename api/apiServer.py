@@ -132,4 +132,3 @@ def root():
             }
     json_object = json.dumps(ec2info, indent = 4) 
     return json_object
-
