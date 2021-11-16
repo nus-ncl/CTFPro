@@ -41,7 +41,7 @@ def root():
     v.halt() # For halting an vb instance
     return  {"message": "Local Virtualbox Instance Halted."}
     
-@app.get("/resource/vb/statusInstance")
+@app.get("/resource/vb/statusInstanceAll")
 def root():
     vagrantfile = "api/config/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
@@ -51,7 +51,7 @@ def root():
 
 @app.get("/provision/aws/createInstance")
 def root():
-    vagrantfile = "/home/flak/Desktop/aws"
+    vagrantfile = "api/config/aws"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() # For creating an ec2 instance based on vagrantfile
     return  {"message": "AWS Instance Provisoned."}
@@ -65,7 +65,7 @@ def root(ins_name: str):
        "Values": [ins_name]}]).terminate() # For terminating an specfic ec2 instance
     return  {"message": "{} AWS Instance Destroyed.".format(ins_name)}
     
-@app.get("/control/aws/startSpecficInstance")
+@app.get("/control/aws/startInstance")
 def root(ins_name: str):
     ec2 = boto3.resource('ec2')
     ec2.instances.filter(Filters=[{
@@ -74,7 +74,7 @@ def root(ins_name: str):
        ]).start() # For starting an specfic ec2 instance
     return  {"message": "{} AWS Instance Started.".format(ins_name)}
     
-@app.get("/control/aws/stopSpecficInstance")
+@app.get("/control/aws/stopInstance")
 def root(ins_name: str):
     ec2 = boto3.resource('ec2')
     ec2.instances.filter(Filters=[{
@@ -83,7 +83,7 @@ def root(ins_name: str):
        ]).stop() # For stopping an specfic ec2 instance
     return  {"message": "{} AWS Instance Halted.".format(ins_name)}
     
-@app.get("/resource/aws/specficInstanceStatus")
+@app.get("/resource/aws/InstanceStatus")
 def root(ins_name: str):
     # Connect to EC2
     ec2 = boto3.resource('ec2')
@@ -109,7 +109,7 @@ def root(ins_name: str):
     json_object = json.dumps(ec2info, indent = 4) 
     return json_object
     
-@app.get("/resource/aws/allInstanceStatus")
+@app.get("/resource/aws/statusInstanceAll")
 def root():
     # Connect to EC2
     ec2 = boto3.resource('ec2')
