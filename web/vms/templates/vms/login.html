@@ -1,0 +1,20 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NCL-CTF Site</title>
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'vms/login.css' %}">
+</head>
+
+<h1>NCL Capture-the-Flag Provisioning Platform</h1>
+
+<h2>Log In</h2>
+<form class="site-from" action ="{% url 'index' %}" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <input type="text" placeholder="Enter Username" name="name" required></br></br>
+  <input type="password" placeholder="Enter Password" name="pass" required></br></br>
+  <button type="submit">Log In</button></br></br>
+</form>
