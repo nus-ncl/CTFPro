@@ -1,0 +1,10 @@
+#! /bin/bash
+yum -y install docker git
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose
+sudo chmod +x /usr/bin/docker-compose
+systemctl enable docker
+systemctl start docker
+git clone https://github.com/CTFd/CTFd.git
+cd CTFd
+docker-compose up -d
+iptables -t nat -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 8000
