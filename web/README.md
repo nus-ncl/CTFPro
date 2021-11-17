@@ -1,3 +1,6 @@
+
+Start website using command of python3 manage.py runserver
+=======
 ## CTF Provisioning Front-end (Web interface) modules
 
 ### Requirements:

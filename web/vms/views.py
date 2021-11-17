@@ -5,6 +5,13 @@ from django.shortcuts import render
 from .models import Component
 
 
+def login(request):
+	c_list = Component.objects.all()
+	
+	context = {'c_list': c_list}
+	
+	return render(request, 'vms/login.html', context) 
+
 def index(request):
 	c_list = Component.objects.all()
 	
