@@ -1,9 +1,29 @@
 import vagrant
 import os
 import boto3
-import json 
+import json
+import virtualbox
+import subprocess 
+import vboxapi 
+import enum
 from collections import defaultdict
 from fastapi import FastAPI
+
+class machineStates(enum.Enum): #for VB since vm.state returns in int
+   MachineState_Null = 0
+   MachineState_PoweredOff = 1
+   MachineState_Saved = 2
+   MachineState_Teleported = 3
+   MachineState_Aborted = 4
+   MachineState_Running = 5
+   MachineState_Paused = 6
+   MachineState_Stuck = 7
+   MachineState_Teleporting = 8
+   MachineState_LiveSnapshotting = 9
+   MachineState_Starting = 10
+   MachineState_Stopping = 11
+   MachineState_Saving = 12
+   MachineState_Restoring = 13
 
 app = FastAPI()
 
@@ -15,37 +35,52 @@ def root():
     
 @app.get("/provision/vb/createInstance")
 def root():
-    vagrantfile = "api/config/vb"
+    vagrantfile = "/home/flak/Desktop/vb"
     v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
     v.up() # For creating an vb instance based on vagrantfile
     return  {"message": "Local Virtualbox Instance Provisoned."}
     
 @app.get("/provision/vb/deleteInstance")
-def root():
-    vagrantfile = "api/config/vb"
-    v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
-    v.destroy() # For deleting an vb instance
-    return  {"message": "Local Virtualbox Instance Destroyed."}
+def root(ins_name: str):
+    vbox = virtualbox.VirtualBox()
+    vm = vbox.find_machine(ins_name)
+    vm.remove(delete=True) # For destroying an vb instance
+    return  {"message": "{} VB Instance Destroyed.".format(ins_name)}
     
 @app.get("/control/vb/startInstance")
-def root():
-    vagrantfile = "api/config/vb"
-    v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
-    v.up() # For starting an vb instance
-    return  {"message": "Local Virtualbox Instance Started"}
+def root(ins_name: str):
+    subprocess.call(["VBoxManage", "controlvm", ins_name, "resume"]) # For starting an vb instance
+    return  {"message": "{} VB Instance started.".format(ins_name)}
     
 @app.get("/control/vb/stopInstance")
-def root():
-    vagrantfile = "api/config/vb"
-    v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
-    v.halt() # For halting an vb instance
-    return  {"message": "Local Virtualbox Instance Halted."}
+def root(ins_name: str):
+    subprocess.call(["VBoxManage", "controlvm", ins_name, "pause"]) # For stopping an vb instance
+    return  {"message": "{} VB Instance stopped.".format(ins_name)}
+    
+@app.get("/resource/vb/instanceStatus")
+def root(ins_name: str):
+    vbox = virtualbox.VirtualBox()
+    vbinfo = defaultdict()
+    vm = vbox.find_machine(ins_name) # Find Specfic VB instance
+    vbinfo = defaultdict()
+    vbinfo[vm.id_p] = { # Add instance info to a dictionary 
+         'Name': vm.name,
+         'State': machineStates(vm.state).name,
+    }
+    json_object = json.dumps(vbinfo, indent = 4)
+    return json_object
     
 @app.get("/resource/vb/statusInstanceAll")
-def root():
-    vagrantfile = "api/config/vb"
-    v = vagrant.Vagrant(vagrantfile, quiet_stdout=False)
-    return v.status() # For getting an vb instance status
+def root():    
+    vbox = virtualbox.VirtualBox()
+    vbinfo = defaultdict()
+    for vm in vbox.machines: # Find all VB instances
+	    vbinfo[vm.id_p] = { # Add instance info to a dictionary 
+                'Name': vm.name,
+                'State': machineStates(vm.state).name,
+            }
+    json_object = json.dumps(vbinfo, indent = 4) 
+    return json_object   
     
     #Provison AWS API
 
@@ -83,7 +118,7 @@ def root(ins_name: str):
        ]).stop() # For stopping an specfic ec2 instance
     return  {"message": "{} AWS Instance Halted.".format(ins_name)}
     
-@app.get("/resource/aws/InstanceStatus")
+@app.get("/resource/aws/instanceStatus")
 def root(ins_name: str):
     # Connect to EC2
     ec2 = boto3.resource('ec2')
