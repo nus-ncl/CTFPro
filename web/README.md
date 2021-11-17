@@ -30,6 +30,7 @@ Run the web front-end
 
 ```bash
 cd CTFPro/web
+python3 manage.py migrate
 python3 manage.py runserver
 ```
 
