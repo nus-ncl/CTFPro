@@ -27,5 +27,5 @@ jobs:
         pip install Django
     - name: Run Server
       run: |
-        cd web/nclsite
+        cd web
         python manage.py runserver
