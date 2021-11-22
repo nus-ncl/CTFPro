@@ -29,11 +29,12 @@ git clone https://github.com/nus-ncl/CTFPro.git
 Run the web front-end
 
 ```bash
-cd CTFPro/web/nclsite
+cd CTFPro/web
+python3 manage.py migrate
 python3 manage.py runserver
 ```
 
-Open the web using your browser with this URL `http://localhost:8080/vms/`
+Open the web using your browser with this URL `http://localhost:8000/vms/`
 
 ### Enabling Authentication
 
