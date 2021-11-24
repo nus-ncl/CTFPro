@@ -1,0 +1,63 @@
+.sidenav {
+  height:100%;
+  width:160px;
+  position: fixed;
+  z-index:1;
+  top:0;
+  left:0;
+  background-color:#111;
+  overflow-x: :hidden;
+  padding-top:20px;
+
+}
+
+.sidenav a {
+  padding:6px 8px 6px 16px;
+  text-decoration: none;
+  font-size:15px;
+  color: #EC0D00;
+  display:block;
+}
+ 
+ .sidenav a:hover{
+  color:#f1f1f1;
+}
+.main{
+  margin-left:160px;
+  padding: 0px 10px;
+}
+
+.header{
+  border-radius: 25px;
+  border: 2px solid #73AD21;
+  height: 150px;
+  margin-left:160px;
+  padding: 0px 10px;
+
+}
+
+
+h1 {
+  background: black;
+  color: #EC0D00;
+  font-size: 40px;
+  border-radius: 17px;
+  width: 170px;
+  text-align: center;
+}
+
+p {
+  background: white;
+  color: #EC0D00;
+  font-size: 15px;
+}
+
+body{
+  color: red;
+}
+table{
+  color: black;
+  border: 1px solid black;
+}
+
+
