@@ -1,0 +1,48 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NCL-CTF Site</title>
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'vms/monitorstyle.css' %}">
+</head>
+<body>
+
+<div class="sidenav">
+	<a href="{% url 'index' %}">Summary</a>
+	<a href="{% url 'components' %}">Components</a>
+	<a href="{% url 'landpage' %}"> > Landing Page</a>
+	<a href="{% url 'dashboard' %}"> > Dashboard</a>
+	<a href="{% url 'challenges' %}"> > Challenges</a>
+	<a href="{% url 'monitor' %}"> > Monitoring</a>
+	<a href="{% url 'stats' %}">Statistics</a>
+	<a href="/vms">Logout</a>
+</div>
+
+<div class="header">
+<h1>ncl-ctf </h1>
+<p>NCL Capture-the-Flag Provisioning Platform</p>
+</div>
+
+<div class="main">
+<p> </p>
+<table border="1" width="600">
+<tr>
+<td>Components</td>
+<td>Hostname</td>
+<td>Status</td>
+</tr>
+<p> </p>
+
+{% for components in c_list %}
+<tr>
+<td>{{ components.component_text }}</td>
+<td>
+{{ components.hostname }}</td>
+<td>{{ components.status }} </td>
+</tr>
+{% endfor %}
+</table>
+
+</div>

@@ -1,0 +1,22 @@
+<title>NCL-CTF Site Registration</title>
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'vms/register.css' %}">
+</head>
+
+{% block content %} 
+    
+
+<!--Register--> 
+<div class="container py-5">
+	<h1>Register</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{{ register_form }}                    
+		<button class="btn btn-primary" type="submit">Register</button>
+	</form>
+	<p class="text-center">If you already have an account, <a href="/vms">Login</a> instead.</p>
+</div>
+
+{% endblock %}
