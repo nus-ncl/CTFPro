@@ -50,6 +50,7 @@ Install [virtual box](https://www.virtualbox.org/wiki/Downloads).
 ```bash
 sudo apt update
 sudo apt install virtualbox virtualbox-ext-pack
+sudo python3 -m pip install virtualbox
 ```
 
 Install [fastapi](https://fastapi.tiangolo.com/).
