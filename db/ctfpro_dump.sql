@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `component`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `component` (
-  `component_id` int NOT NULL,
+  `component_id` int NOT NULL AUTO_INCREMENT,
   `type` varchar(45) NOT NULL,
   `hostname` varchar(45) NOT NULL,
   `URL_access` varchar(45) NOT NULL,
@@ -49,7 +49,7 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `user_id` int NOT NULL,
+  `user_id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
