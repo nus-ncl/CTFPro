@@ -84,14 +84,10 @@ class DjangoMigrations(models.Model):
     applied = models.DateTimeField()
 
 
-
-
 class DjangoSession(models.Model):
     session_key = models.CharField(primary_key=True, max_length=40)
     session_data = models.TextField()
     expire_date = models.DateTimeField()
-
-
 
 
 class Users(models.Model):

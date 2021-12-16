@@ -10,6 +10,16 @@ from django.contrib.auth.models import User
 from django.db import models
 from .models import Component
 
+def register_request(request):
+	if request.method == "POST":
+		form = NewUserForm(request.POST)
+		if form.is_valid():
+			user = form.save()
+			messages.success(request, "Registration successful." )
+			return redirect("/vms/login.html/")
+		messages.error(request, "Unsuccessful registration. Invalid information.")
+	form = NewUserForm()
+	return render (request=request, template_name="vms/register.html", context={"register_form":form})
 
 def register_request(request):
 	if request.method == "POST":
