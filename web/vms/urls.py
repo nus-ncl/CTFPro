@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf.urls import url
+from django.contrib import admin
 
 from . import views
 
@@ -10,6 +12,8 @@ urlpatterns = [
     path("register.html/", views.register_request, name="register"),
     
     path('index.html/', views.index, name='index'),
+    
+    url(r'^logout', views.pagelogout, name='logout'),
     
     path('challenges.html/', views.challenges, name='challenges'),
 
