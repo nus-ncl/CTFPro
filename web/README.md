@@ -9,6 +9,7 @@ It is tested with these following environment:
 1. Tested on ubuntu 20.04 (but it should work with other version)
 2. Python 3.7 or greater
 3. Python Installer (PIP)
+4. mysqlclient package
 
 ### Installation
 
@@ -17,6 +18,13 @@ Install [Python Django](https://docs.djangoproject.com/en/3.2/topics/install/).
 ```bash
 sudo python -m pip3 install Django
 ```
+
+Install [Python mysqlclient](https://pypi.org/project/mysqlclient/).
+
+```bash
+pip install mysqlclient
+```
+
 
 ### Download and Run the Front-end code
 
