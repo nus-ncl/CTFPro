@@ -1,5 +1,4 @@
-from django.urls import path, include
-from django.conf.urls import url
+from django.urls import path, include, re_path
 from django.contrib import admin
 
 from . import views
@@ -13,7 +12,7 @@ urlpatterns = [
     
     path('index.html/', views.index, name='index'),
     
-    url(r'^logout', views.pagelogout, name='logout'),
+    re_path(r'^logout', views.pagelogout, name='logout'),
     
     path('challenges.html/', views.challenges, name='challenges'),
 
