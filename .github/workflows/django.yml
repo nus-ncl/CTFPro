@@ -25,6 +25,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install Django
+        pip install mysqlclient
     - name: Run Server
       run: |
         cd web
