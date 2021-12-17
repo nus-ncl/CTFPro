@@ -9,7 +9,7 @@ It is tested with these following environment:
 1. Tested on ubuntu 20.04 (but it should work with other version)
 2. Python 3.7 or greater
 3. Python Installer (PIP)
-4. mysqlclient package
+4. Mysqlclient package for database integration
 
 ### Installation
 
