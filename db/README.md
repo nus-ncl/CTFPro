@@ -13,10 +13,19 @@ Access the container by executing an interactive terminal:
 docker exec -it (CONTAINER_NAME) bash
 
 Once inside, access mysql through the following command:
-mysql -uroot -p
+mysql -u root -p
 (there will be a prompt to enter password after)
 
 EXTRA--
 To view the databases, type "show databases;"
 To access a database, type "use (database_name);"
 To view the tables in the database, type "show tables;"
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+ALTERNATIVELY 
+1. Enter the MySQL shell
+$ mysql -u root -p
+2. Create DB
+mysql> CREATE DATABASE ctfpro;
+3. Exit MySQL shell and import dump
+$ mysql -u root -p ctfpro < ctfpro_dump.sql
