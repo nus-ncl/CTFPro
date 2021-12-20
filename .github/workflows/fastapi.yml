@@ -32,5 +32,6 @@ jobs:
 
     - name: Test Run Fast API with Fast API Client
       run: |
+        pip install pytest
         cd api/tests/
         pytest test.py
