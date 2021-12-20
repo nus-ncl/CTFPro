@@ -30,8 +30,7 @@ jobs:
         chmod +x install_req.sh
         ./install_req.sh
 
-    - name: Test Run Fast API through Uvicorn
+    - name: Test Run Fast API with Fast API Client
       run: |
         cd api/tests/
-        python test.py
-  
+        pytest test.py
