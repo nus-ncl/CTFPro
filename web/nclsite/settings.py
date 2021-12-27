@@ -78,8 +78,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ctfpro',
-        'USER': 'tim',
-        'PASSWORD': 'nclctfpro',
+        'USER': 'dbadmin',
+        'PASSWORD': 'pass',
         'HOST': '127.0.0.1',
         'PORT': '3306',     
     }
