@@ -16,19 +16,16 @@ urlpatterns = [
     
     path('challenges.html/', views.challenges, name='challenges'),
 
-    
     path('components.html/', views.components, name='components'),
-
+    
+    path('component-form.html/', views.component_form, name='componentform'),
     
     path('dashboard.html/', views.dashboard, name='dashboard'),
 
-    
     path('landpage.html/', views.landpage, name='landpage'),
 
-    
     path('monitor.html/', views.monitor, name='monitor'),
 
-    
     path('stats.html/', views.stats, name='stats'),
 
     
