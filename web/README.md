@@ -49,3 +49,5 @@ To enable authentication this website, execute this command:
 ```bash
 python3 manage.py createsuperuser
 ```
+
+To access the admin site, use this URL `http://localhost:8000/admin/`
