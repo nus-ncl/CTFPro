@@ -17,7 +17,11 @@
 	<a href="{% url 'challenges' %}"> > Challenges</a>
 	<a href="{% url 'monitor' %}"> > Monitoring</a>
 	<a href="{% url 'stats' %}">Statistics</a>
-	<a href="/vms">Logout</a>
+	<a href="#" onClick="document.getElementById('logoutform').submit()"><button 	type="button">Logout</button></a>
+	<form id="logoutform" method="POST" action="{% url 'login' %}">
+	{% csrf_token %}
+	<input type="hidden">
+	</form>
 </div>
 
 <div class="header">
