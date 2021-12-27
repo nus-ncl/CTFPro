@@ -1,4 +1,3 @@
-=======
 ## CTF Provisioning Front-end (Web interface) modules
 
 ### Requirements:
