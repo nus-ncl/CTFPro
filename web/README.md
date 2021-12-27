@@ -1,5 +1,3 @@
-
-Start website using command of python3 manage.py runserver
 =======
 ## CTF Provisioning Front-end (Web interface) modules
 
@@ -10,6 +8,7 @@ It is tested with these following environment:
 2. Python 3.7 or greater
 3. Python Installer (PIP)
 4. Mysqlclient package for database integration
+5. Database already running with correct name, user, password, IP and port listed in settings.py (If any setting is different, change in the listed file)
 
 ### Installation
 
