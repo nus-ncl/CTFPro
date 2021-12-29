@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# # vi: set ft=ruby :
+ 
+# Require JSON module
+require 'json'
+ 
+# Read JSON file and private key
+pri_key_path = File.expand_path("../../../../vagrant.pem", __FILE__)
+jsonfile = File.expand_path("../../sample.json", __FILE__)
+filej = File.read(jsonfile)
+servers = JSON.parse(filej)
+
+# Create boxes
+Vagrant.configure("2") do |config|
+ 
+  # Iterate through entries in JSON file
+  servers.each do |server|
+    if server['provision'] == TRUE && server['type'] == 'virtualbox'
+    	    config.vm.define server['hostname'] do |srv|
+              srv.vm.box = "ubuntu/focal64"
+              srv.vm.network 'public_network'
+              srv.vm.hostname = server['hostname']
+              srv.vm.synced_folder ".", "/vagrant", disabled: true
+              srv.vm.provider server['type'] do |vmw|
+                vmw.name = server['hostname']
+              end # srv.vm.provider
+            end # config.vm.define
+        
+    elsif server['provision'] == TRUE && server['type'] == 'aws'
+            config.vm.define server['hostname'] do |srv|
+              srv.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+              srv.vm.box = 'dummy'
+              srv.vm.hostname = server['hostname']
+              srv.vm.synced_folder ".", "/vagrant", disabled: true
+              srv.vm.provider server['type'] do |vmw, override|
+                vmw.aws_profile = "default"          # For now this is default, in the future the keys will be taken from the db 
+                vmw.ami = "ami-002068ed284fb165b"    # Change accordingly to your region's AMI
+                vmw.instance_type = "t2.micro"
+                vmw.security_groups = ["vagrant"]    # Change accordingly to your created security group [allowing port 80(http) and 22(ssh)]
+                vmw.keypair_name = "vagrant"         # Change accordingly to your created keypair name
+                override.ssh.username = "ec2-user"
+                override.ssh.private_key_path = pri_key_path
+                vmw.block_device_mapping   = [
+                  {
+                    'DeviceName' => '/dev/xvda',     # Change accordingly to you region's device name
+                    'Ebs.VolumeSize' => 10,
+                    'Ebs.VolumeType' => 'gp2',
+                    'Ebs.DeleteOnTermination' => true
+                  }
+                ]
+                vmw.tags = {
+                  'Name' => server["hostname"]
+                }
+              end # srv.vm.provider
+            end # config.vm.define  
+    end # end of if elsif
+  end # servers.each
+end # Vagrant.configure
