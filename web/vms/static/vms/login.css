@@ -1,0 +1,17 @@
+p {
+  background: white;
+  color: #EC0D00;
+  font-size: 15px;
+}
+
+h1 {
+  background: black;
+  color: #EC0D00;
+  font-size: 40px;
+  border-radius: 17px;
+}
+
+body{
+  color: red;
+}
+
