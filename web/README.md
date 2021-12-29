@@ -16,7 +16,7 @@ Install [Python Django](https://docs.djangoproject.com/en/3.2/topics/install/).
 ```bash
 sudo python -m pip3 install Django
 ```
-Install [Python 3 and MySQL development headers and libraries]
+Install Python 3 and MySQL development headers and libraries
 
 ```bash
 sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
