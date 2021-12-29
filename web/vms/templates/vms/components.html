@@ -17,7 +17,11 @@
 	<a href="{% url 'challenges' %}"> > Challenges</a>
 	<a href="{% url 'monitor' %}"> > Monitoring</a>
 	<a href="{% url 'stats' %}">Statistics</a>
-	<a href="/vms">Logout</a>
+	<a href="#" onClick="document.getElementById('logoutform').submit()"><button 	type="button">Logout</button></a>
+	<form id="logoutform" method="POST" action="{% url 'login' %}">
+	{% csrf_token %}
+	<input type="hidden">
+	</form>
 </div>
 
 <div class="header">
@@ -33,12 +37,16 @@
 </tr>
 <p> </p>
 
-{% for components in c_list %}
+{% for component in data %}
 <tr>
-<td>{{ components.component_text }}</td>
+<td>{{ component.Type }}</td>
 </tr>
 {% endfor %}
 </table>
+
+<p> </p>
+
+<a href="{% url 'componentform' %}">Want to register a new Component? Click here!</a>
 
 </div>
 

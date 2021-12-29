@@ -18,7 +18,11 @@
 	<a href="{% url 'challenges' %}"> > Challenges</a>
 	<a href="{% url 'monitor' %}"> > Monitoring</a>
 	<a href="{% url 'stats' %}">Statistics</a>
-	<a href="/vms">Logout</a>
+	<a href="#" onClick="document.getElementById('logoutform').submit()"><button 	type="button">Logout</button></a>
+	<form id="logoutform" method="POST" action="{% url 'login' %}">
+	{% csrf_token %}
+	<input type="hidden">
+	</form>
 </div>
 
 <div class="header">
@@ -28,7 +32,7 @@
 <div class="main">
 <p> </p>
 {% if user.is_authenticated %}
-    <p>Welcome, {{ user.get_username }}. Thanks for logging in.</p>
+    <p>Welcome, {{ user.username }}. Thanks for logging in.</p>
 {% else %}
     <p>Welcome, new user.</p>
 {% endif %}
@@ -42,12 +46,12 @@
 <p> </p>
 <b>Summary</b>
 
-{% for components in c_list %}
+{% for component in data %}
 <tr>
-<td>{{ components.component_text }}</td>
+<td>{{ component.Type }}</td>
 <td>
-{{ components.hostname }}</td>
-<td>{{ components.status }} </td>
+{{ component.hostname }}</td>
+<td>{{ component.status }} </td>
 </tr>
 {% endfor %}
 </table>
