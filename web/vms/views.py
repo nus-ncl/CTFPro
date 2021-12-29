@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.template import loader
-from .forms import NewUserForm
+from .forms import NewUserForm, componentForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib import messages
@@ -10,6 +10,16 @@ from django.contrib.auth.models import User
 from django.db import models
 from .models import Component
 
+def register_request(request):
+	if request.method == "POST":
+		form = NewUserForm(request.POST)
+		if form.is_valid():
+			user = form.save()
+			messages.success(request, "Registration successful." )
+			return redirect("/vms/login.html/")
+		messages.error(request, "Unsuccessful registration. Invalid information.")
+	form = NewUserForm()
+	return render (request=request, template_name="vms/register.html", context={"register_form":form})
 
 def register_request(request):
 	if request.method == "POST":
@@ -57,6 +67,17 @@ def components(request):
 	context = {'data': data}
 	
 	return render(request, 'vms/components.html', context)
+
+def component_form(request):
+	if request.method == "POST":
+		form = componentForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect('/vms/components.html/')
+			
+	else:
+		form = componentForm()
+	return render(request, 'vms/component-form.html', {'form': form})
 
 def pagelogout(request):
 	if request.method == "POST":
