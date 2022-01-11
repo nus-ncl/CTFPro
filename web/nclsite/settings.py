@@ -128,3 +128,5 @@ STATIC_URL = '/static/'
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
 
+# Extending user model
+AUTH_USER_MODEL = 'vms.User'
