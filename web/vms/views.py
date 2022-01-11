@@ -5,21 +5,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 
 from django.db import models
-from .models import Component
+from .models import Component, User
 
-def register_request(request):
-	if request.method == "POST":
-		form = NewUserForm(request.POST)
-		if form.is_valid():
-			user = form.save()
-			messages.success(request, "Registration successful." )
-			return redirect("/vms/login.html/")
-		messages.error(request, "Unsuccessful registration. Invalid information.")
-	form = NewUserForm()
-	return render (request=request, template_name="vms/register.html", context={"register_form":form})
 
 def register_request(request):
 	if request.method == "POST":
@@ -51,6 +40,7 @@ def login(request):
 
 
 def index(request):
+	
 	user = request.user
 	
 	data = Component.objects.filter(username = user)
