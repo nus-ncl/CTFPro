@@ -28,7 +28,6 @@ Install [Python mysqlclient](https://pypi.org/project/mysqlclient/).
 pip install mysqlclient
 ```
 
-
 ### Download and Run the Front-end code
 
 Download [CTF-Pro](https://github.com/nus-ncl/CTFPro) from GitHub repository.

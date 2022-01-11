@@ -130,3 +130,4 @@ LOGIN_REDIRECT_URL = '/'
 
 # Extending user model
 AUTH_USER_MODEL = 'vms.User'
+
