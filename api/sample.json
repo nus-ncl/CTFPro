@@ -1,0 +1,22 @@
+[
+    {
+        "provision": true,
+        "hostname": "cow",
+        "type": "virtualbox"
+    },
+    {
+        "provision": true,
+        "hostname": "salmon",
+        "type": "aws"
+    },
+    {
+        "provision": false,
+        "hostname": "string",
+        "type": "string"
+    },
+    {
+        "provision": false,
+        "hostname": "string",
+        "type": "string"
+    }
+]

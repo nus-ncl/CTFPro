@@ -2,146 +2,122 @@
 
 Backend for frontend
 
-Tested on ubuntu 20.04
+Tested on a fresh install of ubuntu 20.04.3 Desktop
 
-## Requirements:
+## Steps:
 
 Python 3.7 or greater.
 
-Install [vagrant](https://www.vagrantup.com/downloads).
+Setup getting the CTFPro with git.
 
 ```bash
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update && sudo apt-get install vagrant
+sudo apt install git
+cd Desktop
+git clone https://github.com/TunSiang/CTFPro.git
 ```
 
-Install [python-vagrant](https://github.com/todddeluca/python-vagrant).
+Setup [install_req.sh] file.
 
 ```bash
-sudo pip3 install python-vagrant
-```
-
-Install [vagrant-aws](https://github.com/mitchellh/vagrant-aws), however it did not work for me, so i opted for another solution.
-
-```bash
-sudo vagrant plugin install vagrant-aws-mkubenka --plugin-version "0.7.2.pre.24"
-```
-
-Credit to user mkubenka.
-[Issue](https://github.com/mitchellh/vagrant-aws/issues/566) here.
-
-Install [awscli](https://github.com/aws/aws-cli/tree/v2).
-
-```bash
-sudo apt update
-sudo apt-get install awscli -y
-sudo pip3 install --upgrade awscli
+sudo chmod 777 /home/{your_username}/Desktop/CTFPro/api/scripts/install_req.sh
+yes | ./home/{your_username}/Desktop/CTFPro/api/scripts/install_req.sh
 ```
 
 Setup [awscli](https://github.com/aws/aws-cli/tree/v2).
 
 ```bash
-sudo aws configure
+aws configure
 ```
 
-Install [virtual box](https://www.virtualbox.org/wiki/Downloads).
+Setup [local_mysql_db].
 
 ```bash
-sudo apt update
-sudo apt install virtualbox virtualbox-ext-pack
-sudo python3 -m pip install virtualbox
+sudo mysql
+
+CREATE USER 'sammy'@'localhost' IDENTIFIED BY 'password';
+
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'sammy'@'localhost' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+exit
+
+
+# Now log in as sammy 
+
+mysql -u sammy -p   # Password is password
+
+CREATE DATABASE ncl;
+
+use ncl;
+
+create table users (
+username varchar(45) NOT NULL PRIMARY KEY, 
+password varchar(45) NOT NULL,
+email varchar(45) NOT NULL, 
+institution varchar(45) NOT NULL
+);
+
+INSERT INTO users VALUE ("billy", "password", "billy@ncl.com", "NCL");
+
+INSERT INTO users VALUE ("axe", "password", "axe@ncl.com", "NCL");
+
+create table component (
+component_id int AUTO_INCREMENT PRIMARY KEY, 
+type varchar(45) NOT NULL, 
+hostname varchar(45) NOT NULL,
+state varchar(45) NOT NULL,
+URL_access varchar(45) NOT NULL, 
+username varchar(45) NOT NULL,
+CONSTRAINT fk_name
+FOREIGN KEY (username) 
+        REFERENCES users(username)
+);
+
+exit
+
 ```
 
-Install [fastapi](https://fastapi.tiangolo.com/).
-
-```bash
-sudo pip3 install fastapi
-```
-
-Install [uvicorn](https://fastapi.tiangolo.com/), a ASGI server, for production.
-
-```bash
-sudo pip3 install "uvicorn[standard]"
-```
-
-## Virtual Box
-
-### Setup
-
-fields that need to be replaced in the api/config/vb/vagrantFile:
-
-```bash
-# change ip to a ip that exists in your network.
-config.vm.network "private_network", ip: "172.30.1.5"
-```
-
-### Usage 
-
-```bash
-cd api/config/vb
-sudo vagrant up
-```
-which it will take about 10 to 20 mins (depending on how fast your computer is) to setup the vm,
-which you will be able to access the CTFd webpage (default ip: 172.30.1.5) from firefox(outside of virtual box).
-
-## Amazon Web Service
-
-### Setup
-
-fields that need to be replaced in the api/config/aws/vagrantFile:
-
-```bash
-# change the profile as needed
-aws.aws_profile = "default"
-
-# ami-id is different on every region, therefore need to enter your region's ami-id 
-aws.ami = "ami-id depends on your region"
-
-# default t2.micro change as needed.
-aws.instance_type = "t2.micro"
-
-# your created security group allowing http and ssh
-aws.security_groups = ["security-group-here"]
-
-# your created keypair name and path to your pem file
-aws.keypair_name = "key-pair-here"
-override.ssh.private_key_path = "/path/to/your/.pem file"
-
-# DeviceName is different on every region, therefore need to enter your region's DeviceName, and change other options as needed. 
-    aws.block_device_mapping   = [
-      {
-        'DeviceName' => 'depends-on-your-device',
-        'Ebs.VolumeSize' => 30,
-        'Ebs.VolumeType' => 'gp2',
-        'Ebs.DeleteOnTermination' => true
-      }
-    ]
-    
-# change Name to the name you want.
-    aws.tags = {
-      'Name' => 'ctfd', #Change as appropriate
-    }
-```
 
 ### Usage
 
 ```bash
-cd api/config/aws
-sudo vagrant up
+cd /home/{your_username}/Desktop/CTFPro/api
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Access/ find out your ip address with ifconfig
+ifconfig
+
+# Test out the different api calls using the Swagger UL at " http://{your_ip}:8000/docs".
+
+# Follow the example with video:
+https://drive.google.com/drive/folders/1G1nBKYZ4RSeB3OtkEuE-L464E0DyFuD2?usp=sharing
+
+# Example list all
+(Since we only created user billy and user axe in our db we can only use billy and axe)
+
+# Example list selected
+(User billy and the selected instance name to query)
+
+# Example Create instance
+(In this example, we are provisioning 2 instances one virtualbox named "fish", another instance is aws named "cow".
+If {component_name}=true means that you want to provison this instance, default all is set to true, please check to make sure which component to provison or else it willhave an error.)
+
+(Note! that right now there is no installing the ctfd script or etc just for testing aka making it faster to provision/test.)
+
+# Example stopping/starting an instance
+(Right now there is only stop and start, stopping the instance, make sure that under {cur_state} is stop, if you want to start it change it to start.)
+(Right now it will only check for start and stop, will need to create an exception to catch any other values.)
+
+# Example Deleting a instance
+(Deleting the instance using instance name.)
+
+ALL this is with CRUD, storing the info into the db and using the db to get the info out.
+
+
 ```
-which it will take about 10 to 20 mins (depending on how fast your computer is) to setup the vm,
-which you will be able to access the CTFd webpage (default ip: 172.30.1.5) from firefox(outside of virtual box).
 
-## FAST API
-
-### Usage
-
-```bash
-cd api
-
-# start server
-uvicorn apiServer:app --reload
-```
-
-Test out the different api calls using the Swagger UL at " http://127.0.0.1:8000/docs".
+### Errors
+Make sure that your AMI is correct (checking the region and the AMI).
+I got this error where AMI is not recognised even though it is the correct AMI, later i know that the AMI was updated recently for my region.
+Even after updating the AMI and restarting the uvicorn, it still gives the error, only after deleting that Vagrantfile and creating a new one with the same settings does it work again. 
