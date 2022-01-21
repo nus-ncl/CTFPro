@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 
 from django.db import models
-from .models import Component
+from .models import Component, User
 
 def register_request(request):
 	if request.method == "POST":
@@ -117,7 +117,7 @@ def monitor(request):
 	user = request.user
 	
 	data = Component.objects.filter(username = user)
-	
+
 	context = {'data': data}
 	
 	return render(request, 'vms/monitor.html', context)

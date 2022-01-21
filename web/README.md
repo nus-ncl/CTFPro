@@ -6,7 +6,7 @@ It is tested with these following environment:
 1. Tested on ubuntu 20.04 (but it should work with other version)
 2. Python 3.7 or greater
 3. Python Installer (PIP)
-4. Mysqlclient package for database integration
+4. Mysqlclient packages for database integration
 5. Database already running with correct name, user, password, IP and port listed in settings.py (If any setting is different, change in the listed file)
 
 ### Installation
@@ -16,13 +16,17 @@ Install [Python Django](https://docs.djangoproject.com/en/3.2/topics/install/).
 ```bash
 sudo python -m pip3 install Django
 ```
+Install Python 3 and MySQL development headers and libraries
+
+```bash
+sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
+```
 
 Install [Python mysqlclient](https://pypi.org/project/mysqlclient/).
 
 ```bash
 pip install mysqlclient
 ```
-
 
 ### Download and Run the Front-end code
 
