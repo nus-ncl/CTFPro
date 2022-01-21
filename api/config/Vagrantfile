@@ -44,10 +44,10 @@ Vagrant.configure("2") do |config|
     elsif server['provision'] == TRUE && server['resource'] == 'aws'
             config.vm.define server['hostname'] do |srv|
               if server['type'] == "dashboard"
-                ami_ver = "ami-0ce24b89cfbd3f30e"
+                ami_ver = "ami-0bb4c80704c6f1dee"
                 
               elsif server['type'] == "webpage"
-                ami_ver = "ami-058f95a0afd3eb573"
+                ami_ver = "ami-0724bb99b655fd0a0"
                
               elsif server['type'] == "challenge"
                 ami_ver = "ami-0fb653ca2d3203ac1" # placeholder is just ubuntu 
