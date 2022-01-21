@@ -1,3 +1,4 @@
+#schemas
 from pydantic import BaseModel
 from typing import Optional, List
 
@@ -11,16 +12,15 @@ class CreateAndUpdateComponent(BaseModel):
     
 # TO create components
 class Creation(BaseModel):
-    ctfd: bool
-    ctfd_type: str
-    ctfd_name: str
     dashboard: bool
-    dashboard_type: str
+    dashboard_resource: str
     dashboard_name: str
-    landing_page: bool
-    landing_page_type: str
-    landing_page_name: str
-    database: bool
-    database_type: str
-    database_name: str
-      
+    webpage: bool
+    webpage_resource: str
+    webpage_name: str
+    challenge: bool
+    challenge_resource: str
+    challenge_name: str
+    monitoring: bool
+    monitoring_resource: str
+    monitoring_name: str
