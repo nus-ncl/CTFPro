@@ -2,21 +2,25 @@
     {
         "provision": true,
         "hostname": "cow",
-        "type": "virtualbox"
+        "resource": "virtualbox"
+        "type": "dashboard"
     },
     {
         "provision": true,
         "hostname": "salmon",
-        "type": "aws"
+        "resource": "virtualbox"
+        "type": "webpage"
     },
     {
         "provision": false,
         "hostname": "string",
-        "type": "string"
+        "resource": "virtualbox"
+        "type": "challenge"
     },
     {
         "provision": false,
         "hostname": "string",
-        "type": "string"
+        "resource": "virtualbox"
+        "type": "monitoring"
     }
 ]
