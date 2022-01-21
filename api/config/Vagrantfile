@@ -3,6 +3,7 @@
  
 # Require JSON module
 require 'json'
+
  
 # Read JSON file and private key
 pri_key_path = File.expand_path("../../../../vagrant.pem", __FILE__)
@@ -15,35 +16,62 @@ Vagrant.configure("2") do |config|
  
   # Iterate through entries in JSON file
   servers.each do |server|
-    if server['provision'] == TRUE && server['type'] == 'virtualbox'
+    if server['provision'] == TRUE && server['resource'] == 'virtualbox'
     	    config.vm.define server['hostname'] do |srv|
-              srv.vm.box = "ubuntu/focal64"
+    	      if server['type'] == "dashboard"
+                srv.vm.box = "nus-ncl/ctfd-dashboard"
+                srv.vm.box_version = "1.0.0"
+                
+              elsif server['type'] == "webpage"
+                srv.vm.box = "nus-ncl/ctf-landing-page"
+                srv.vm.box_version = "1.0.0"
+                
+              elsif server['type'] == "challenge"
+                srv.vm.box = "ubuntu/focal64" # placeholder is just ubuntu 
+                
+              elsif server['type'] == "monitoring"
+                srv.vm.box = "ubuntu/focal64" # placeholder is just ubuntu 
+              end # server['type']
+              
               srv.vm.network 'public_network'
               srv.vm.hostname = server['hostname']
               srv.vm.synced_folder ".", "/vagrant", disabled: true
-              srv.vm.provider server['type'] do |vmw|
+              srv.vm.provider server['resource'] do |vmw|
                 vmw.name = server['hostname']
               end # srv.vm.provider
             end # config.vm.define
         
-    elsif server['provision'] == TRUE && server['type'] == 'aws'
+    elsif server['provision'] == TRUE && server['resource'] == 'aws'
             config.vm.define server['hostname'] do |srv|
+              if server['type'] == "dashboard"
+                ami_ver = "ami-0bb4c80704c6f1dee"
+                
+              elsif server['type'] == "webpage"
+                ami_ver = "ami-0724bb99b655fd0a0"
+               
+              elsif server['type'] == "challenge"
+                ami_ver = "ami-055d15d9cfddf7bd3" # placeholder is just ubuntu 
+                
+              elsif server['type'] == "monitoring"
+                ami_ver = "ami-055d15d9cfddf7bd3" # placeholder is just ubuntu 
+              end # server['type']
+
               srv.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
               srv.vm.box = 'dummy'
               srv.vm.hostname = server['hostname']
               srv.vm.synced_folder ".", "/vagrant", disabled: true
-              srv.vm.provider server['type'] do |vmw, override|
+              srv.vm.provider server['resource'] do |vmw, override|
                 vmw.aws_profile = "default"          # For now this is default, in the future the keys will be taken from the db 
-                vmw.ami = "ami-002068ed284fb165b"    # Change accordingly to your region's AMI
+                vmw.ami = ami_ver    # Change accordingly to your region's AMI
                 vmw.instance_type = "t2.micro"
                 vmw.security_groups = ["vagrant"]    # Change accordingly to your created security group [allowing port 80(http) and 22(ssh)]
                 vmw.keypair_name = "vagrant"         # Change accordingly to your created keypair name
-                override.ssh.username = "ec2-user"
+                override.ssh.username = "ubuntu"
                 override.ssh.private_key_path = pri_key_path
                 vmw.block_device_mapping   = [
                   {
-                    'DeviceName' => '/dev/xvda',     # Change accordingly to you region's device name
-                    'Ebs.VolumeSize' => 10,
+                    'DeviceName' => '/dev/sda1',     # Change accordingly to you region's device name
+                    'Ebs.VolumeSize' => 30,          # 30 is the max for free tier 
                     'Ebs.VolumeType' => 'gp2',
                     'Ebs.DeleteOnTermination' => true
                   }

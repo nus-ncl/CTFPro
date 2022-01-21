@@ -12,6 +12,7 @@ import json
 import virtualbox
 import subprocess 
 import enum
+import time
 
 class machineStates(enum.Enum): #for VB states
    Null = 0
@@ -54,56 +55,65 @@ def get_component_info_by_component_id(session: Session, _username: str, _compon
 
 
 # Function to add a new component info to the database
-def create_component(session: Session, _username: str, components: Creation) -> componentsInfo:    ##################################################
+def create_component(session: Session, _username: str, components: Creation) -> componentsInfo:   
     
     
 # Check for no component selected    
-    if components.ctfd == False and components.dashboard == False and components.landing_page == False and components.database == False:
+    if components.dashboard == False and components.webpage == False and components.challenge == False and components.monitoring == False:
         raise NoComponentsSelected
     
-
-#Check if the names are in the database or not if yes go error, no then cont. 
-    if components.ctfd == True:
-        component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.ctfd_name, componentsInfo.username == _username).first()
-        if component_details is not None:
-            raise ComponentInfoAlreadyExistError
-
+# Check if the names given have duplicates are not and if the names are in the database or not if yes go error, no then cont. 
     if components.dashboard == True:
+        if components.dashboard_name == components.webpage_name or components.dashboard_name == components.challenge_name or components.dashboard_name == components.monitoring_name:
+            raise ComponentInfoAlreadyExistError
         component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.dashboard_name, componentsInfo.username == _username).first()
         if component_details is not None:
             raise ComponentInfoAlreadyExistError
 
-    if components.landing_page == True:
-        component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.landing_page_name, componentsInfo.username == _username).first()
+    if components.webpage == True:
+        if components.webpage_name == components.challenge_name or components.webpage_name == components.monitoring_name:
+            raise ComponentInfoAlreadyExistError
+        component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.webpage_name, componentsInfo.username == _username).first()
         if component_details is not None:
             raise ComponentInfoAlreadyExistError
 
-    if components.database == True:
-        component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.database_name, componentsInfo.username == _username).first()
+    if components.challenge == True:
+        if  components.challenge_name == components.monitoring_name:
+            raise ComponentInfoAlreadyExistError
+        component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.challenge_name, componentsInfo.username == _username).first()
+        if component_details is not None:
+            raise ComponentInfoAlreadyExistError
+
+    if components.monitoring == True:
+        component_details = session.query(componentsInfo).filter( componentsInfo.hostname == components.monitoring_name, componentsInfo.username == _username).first()
         if component_details is not None:
             raise ComponentInfoAlreadyExistError
         
 # Create the json file for vagrantfile
     jsconfig = [ 
 	{
-		"provision": components.ctfd,
-		"hostname": components.ctfd_name,
-		"type": components.ctfd_type
-	},
-	{
 		"provision": components.dashboard,
 		"hostname": components.dashboard_name,
-		"type": components.dashboard_type
+		"resource": components.dashboard_resource,
+		"type": "dashboard" 
 	},
 	{
-		"provision": components.landing_page,
-		"hostname": components.landing_page_name,
-		"type": components.landing_page_type
+		"provision": components.webpage,
+		"hostname": components.webpage_name,
+		"resource": components.webpage_resource,
+		"type": "webpage" 
 	},
 	{
-		"provision": components.database,
-		"hostname": components.database_name,
-	        "type": components.database_type
+		"provision": components.challenge,
+		"hostname": components.challenge_name,
+		"resource": components.challenge_resource,
+		"type": "challenge" 
+	},
+	{
+		"provision": components.monitoring,
+		"hostname": components.monitoring_name,
+	        "resource": components.monitoring_resource,
+	        "type": "monitoring" 
 	}
 	]
     
@@ -128,70 +138,26 @@ def create_component(session: Session, _username: str, components: Creation) -> 
     vbox = virtualbox.VirtualBox()
     
 # Get info into the database for each component accepted    
-    if components.ctfd == True and components.ctfd_type == "virtualbox":
-        # Get the machine to receive the machine state and machine IPv4 and OS
-        vm = vbox.find_machine(components.ctfd_name)
-        ctfd_state = machineStates(vm.state).name
-        
-        ctfd_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.ctfd_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
-        ctfd_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.ctfd_name, "/VirtualBox/GuestInfo/Net/1/V4/Broadcast"], capture_output=True, text=True).stdout
-        ctfd_box = ctfd_box.split()
-        ctfd_ip = ctfd_ip.split()
-        ctfd_box = ctfd_box[1]
-        ctfd_ip = ctfd_ip[1]
-        
-        #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.ctfd_type, hostname = components.ctfd_name, URL_access = ctfd_ip, state = ctfd_state)
-        session.add(new_component_info)
-        session.commit()
-        session.refresh(new_component_info)
-        
-    elif components.ctfd == True and components.ctfd_type == "aws":
-        # Get the machine to receive the machine state and machine IPv4 and OS
-        # Get information for specfic instance
-        current_instances = ec2.instances.filter(Filters=[
-          {"Name": "tag:Name",
-           "Values":[components.ctfd_name]}])
-        for instance in current_instances:
-            for tag in instance.tags:
-                if 'Name'in tag['Key']:
-                   name = tag['Value']
-            # Get the instance data
-            ctfd_ip = instance.public_ip_address
-            ctfd_storage = instance.instance_type
-            ctfd_box = instance.platform_details
-            ctfd_state = instance.state['Name']
-               
-        
-        #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.ctfd_type, hostname = components.ctfd_name, URL_access = ctfd_ip, state = ctfd_state)
-        session.add(new_component_info)
-        session.commit()
-        session.refresh(new_component_info)
-        
-        
-        
-        
-    if components.dashboard == True and components.dashboard_type == "virtualbox":
-        
+    if components.dashboard == True and components.dashboard_resource == "virtualbox":
         # Get the machine to receive the machine state and machine IPv4 and OS
         vm = vbox.find_machine(components.dashboard_name)
         dashboard_state = machineStates(vm.state).name
         
+        time.sleep(30)
         dashboard_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.dashboard_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
-        dashboard_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.dashboard_name, "/VirtualBox/GuestInfo/Net/1/V4/Broadcast"], capture_output=True, text=True).stdout
+        dashboard_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.dashboard_name, "/VirtualBox/GuestInfo/Net/1/V4/IP"], capture_output=True, text=True).stdout
         dashboard_box = dashboard_box.split()
         dashboard_ip = dashboard_ip.split()
         dashboard_box = dashboard_box[1]
         dashboard_ip = dashboard_ip[1]
         
         #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.dashboard_type, hostname = components.dashboard_name, URL_access = dashboard_ip, state = dashboard_state)
+        new_component_info = componentsInfo(username = _username, type = "dashboard", resource = components.dashboard_resource, hostname = components.dashboard_name, URL_access = dashboard_ip, state = dashboard_state)
         session.add(new_component_info)
         session.commit()
         session.refresh(new_component_info)
-	        
-    elif components.dashboard == True and components.dashboard_type == "aws":
+        
+    elif components.dashboard == True and components.dashboard_resource == "aws":
         # Get the machine to receive the machine state and machine IPv4 and OS
         # Get information for specfic instance
         current_instances = ec2.instances.filter(Filters=[
@@ -209,93 +175,141 @@ def create_component(session: Session, _username: str, components: Creation) -> 
                
         
         #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.dashboard_type, hostname = components.dashboard_name, URL_access = dashboard_ip, state = dashboard_state)
+        new_component_info = componentsInfo(username = _username, type = "dashboard", resource = components.dashboard_resource, hostname = components.dashboard_name, URL_access = dashboard_ip, state = dashboard_state)
         session.add(new_component_info)
         session.commit()
         session.refresh(new_component_info)
-         
-         
-    if components.landing_page == True and components.landing_page_type == "virtualbox":
-        # Get the machine to receive the machine state and machine IPv4 and OS
-        vm = vbox.find_machine(components.landing_page_name)
-        landing_page_state = machineStates(vm.state).name
         
-        landing_page_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.landing_page_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
-        landing_page_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.landing_page_name, "/VirtualBox/GuestInfo/Net/1/V4/Broadcast"], capture_output=True, text=True).stdout
-        landing_page_box = landing_page_box.split()
-        landing_page_ip = landing_page_ip.split()
-        landing_page_box = landing_page_box[1]
-        landing_page_ip = landing_page_ip[1]
+        
+        
+        
+    if components.webpage == True and components.webpage_resource == "virtualbox":
+        
+        # Get the machine to receive the machine state and machine IPv4 and OS
+        vm = vbox.find_machine(components.webpage_name)
+        webpage_state = machineStates(vm.state).name
+        
+        time.sleep(30)
+        webpage_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.webpage_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
+        webpage_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.webpage_name, "/VirtualBox/GuestInfo/Net/1/V4/IP"], capture_output=True, text=True).stdout
+        webpage_box = webpage_box.split()
+        webpage_ip = webpage_ip.split()
+        webpage_box = webpage_box[1]
+        webpage_ip = webpage_ip[1]
         
         #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.landing_page_type, hostname = components.landing_page_name, URL_access = landing_page_ip, state = landing_page_state)
+        new_component_info = componentsInfo(username = _username, type = "webpage", resource = components.webpage_resource, hostname = components.webpage_name, URL_access = webpage_ip, state = webpage_state)
         session.add(new_component_info)
         session.commit()
         session.refresh(new_component_info)
-        
-        
-    elif components.landing_page == True and components.landng_page_type == "aws":
+	        
+    elif components.webpage == True and components.webpage_resource == "aws":
         # Get the machine to receive the machine state and machine IPv4 and OS
         # Get information for specfic instance
         current_instances = ec2.instances.filter(Filters=[
           {"Name": "tag:Name",
-           "Values":[components.landing_page_name]}])
+           "Values":[components.webpage_name]}])
         for instance in current_instances:
             for tag in instance.tags:
                 if 'Name'in tag['Key']:
                    name = tag['Value']
             # Get the instance data
-            landing_page_ip = instance.public_ip_address
-            landing_page_storage = instance.instance_type
-            landing_page_box = instance.platform_details
-            landing_page_state = instance.state['Name']
+            webpage_ip = instance.public_ip_address
+            webpage_storage = instance.instance_type
+            webpage_box = instance.platform_details
+            webpage_state = instance.state['Name']
                
         
         #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.landing_page_type, hostname = components.landing_page_name, URL_access = landing_page_ip, state = landing_page_state)
+        new_component_info = componentsInfo(username = _username, type = "webpage", resource = components.webpage_resource, hostname = components.webpage_name, URL_access = webpage_ip, state = webpage_state)
+        session.add(new_component_info)
+        session.commit()
+        session.refresh(new_component_info)
+         
+         
+    if components.challenge == True and components.challenge_resource == "virtualbox":
+        # Get the machine to receive the machine state and machine IPv4 and OS
+        vm = vbox.find_machine(components.challenge_name)
+        challenge_state = machineStates(vm.state).name
+        
+        time.sleep(30)
+        challenge_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.challenge_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
+        challenge_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.challenge_name, "/VirtualBox/GuestInfo/Net/1/V4/IP"], capture_output=True, text=True).stdout
+        challenge_box = challenge_box.split()
+        challenge_ip = challenge_ip.split()
+        challenge_box = challenge_box[1]
+        challenge_ip = challenge_ip[1]
+        
+        #add the component into the database
+        new_component_info = componentsInfo(username = _username, type = "challenge", resource = components.challenge_resource, hostname = components.challenge_name, URL_access = challenge_ip, state = challenge_state)
+        session.add(new_component_info)
+        session.commit()
+        session.refresh(new_component_info)
+        
+        
+    elif components.challenge == True and components.challenge_resource == "aws":
+        # Get the machine to receive the machine state and machine IPv4 and OS
+        # Get information for specfic instance
+        current_instances = ec2.instances.filter(Filters=[
+          {"Name": "tag:Name",
+           "Values":[components.challenge_name]}])
+        for instance in current_instances:
+            for tag in instance.tags:
+                if 'Name'in tag['Key']:
+                   name = tag['Value']
+            # Get the instance data
+            challenge_ip = instance.public_ip_address
+            challenge_storage = instance.instance_type
+            challenge_box = instance.platform_details
+            challenge_state = instance.state['Name']
+               
+        
+        #add the component into the database
+        new_component_info = componentsInfo(username = _username, type = "challenge", resource = components.challenge_resource, hostname = components.challenge_name, URL_access = challenge_ip, state = challenge_state)
         session.add(new_component_info)
         session.commit()
         session.refresh(new_component_info)
          
 
                 
-    if components.database == True and components.database_type == "virtualbox":
+    if components.monitoring == True and components.monitoring_resource == "virtualbox":
         # Get the machine to receive the machine state and machine IPv4 and OS
-        vm = vbox.find_machine(components.database_name)
-        database_state = machineStates(vm.state).name
+        vm = vbox.find_machine(components.monitoring_name)
+        monitoring_state = machineStates(vm.state).name
         
-        database_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.database_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
-        database_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.database_name, "/VirtualBox/GuestInfo/Net/1/V4/Broadcast"], capture_output=True, text=True).stdout
-        database_box = database_box.split()
-        database_ip = database_ip.split()
-        database_box = database_box[1]
-        database_ip = database_ip[1]
+        time.sleep(30)
+        monitoring_box = subprocess.run(["VBoxManage", "guestproperty", "get", components.monitoring_name, "/VirtualBox/HostInfo/VBoxVerExt"], capture_output=True, text=True).stdout
+        monitoring_ip = subprocess.run(["VBoxManage", "guestproperty", "get", components.monitoring_name, "/VirtualBox/GuestInfo/Net/1/V4/IP"], capture_output=True, text=True).stdout
+        monitoring_box = monitoring_box.split()
+        monitoring_ip = monitoring_ip.split()
+        monitoring_box = monitoring_box[1]
+        monitoring_ip = monitoring_ip[1]
         
         #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.database_type, hostname = components.database_name, URL_access = database_ip, state = database_state)
+        new_component_info = componentsInfo(username = _username, type = "monitoring", resource = components.monitoring_resource, hostname = components.monitoring_name, URL_access = monitoring_ip, state = monitoring_state)
         session.add(new_component_info)
         session.commit()
         session.refresh(new_component_info)
         
-    elif components.database == True and components.database_type == "aws":
+    elif components.monitoring == True and components.monitoring_resource == "aws":
         # Get the machine to receive the machine state and machine IPv4 and OS
         # Get information for specfic instance
         current_instances = ec2.instances.filter(Filters=[
           {"Name": "tag:Name",
-           "Values":[components.database_name]}])
+           "Values":[components.monitoring_name]}])
         for instance in current_instances:
             for tag in instance.tags:
                 if 'Name'in tag['Key']:
                    name = tag['Value']
             # Get the instance data
-            dashboard_ip = instance.public_ip_address
-            dashboard_storage = instance.instance_type
-            dashboard_box = instance.platform_details
-            dashboard_state = instance.state['Name']
+            monitoring_ip = instance.public_ip_address
+            monitoring_storage = instance.instance_type
+            monitoring_box = instance.platform_details
+            monitoring_state = instance.state['Name']
                
         
         #add the component into the database
-        new_component_info = componentsInfo(username = _username, type = components.dashboard_type, hostname = components.dashboard_name, URL_access = dashboard_ip, state = database_state)
+        new_component_info = componentsInfo(username = _username, type = "monitoring", resource = components.monitoring_resource, hostname = components.monitoring_name, URL_access = monitoring_ip, state = monitoring_state)
         session.add(new_component_info)
         session.commit()
         session.refresh(new_component_info)
@@ -317,7 +331,7 @@ def update_component_info(session: Session, _username: str, _componentname: str,
     vbox = virtualbox.VirtualBox()
         
     # Vb update for state 
-    if component_info.type == "virtualbox":
+    if component_info.resource == "virtualbox":
         # Check if stopping
         if _getstate == "stop":
             # Stop the vb machine
@@ -341,7 +355,7 @@ def update_component_info(session: Session, _username: str, _componentname: str,
             session.refresh(component_info)
            
     # Aws update for state
-    elif component_info.type == "aws":
+    elif component_info.resource == "aws":
         # Check if starting
         if _getstate == "stop":
             #Stop the aws machine
@@ -351,6 +365,7 @@ def update_component_info(session: Session, _username: str, _componentname: str,
                "Values": [_componentname]},
                ]).stop() # For halting an specfic ec2 instance
                
+            time.sleep(40)   
             current_instances = ec2.instances.filter(Filters=[
               {"Name": "tag:Name",
                "Values":[_componentname]}])
@@ -372,6 +387,7 @@ def update_component_info(session: Session, _username: str, _componentname: str,
                "Values": [_componentname]},
                ]).start() # For starting an specfic ec2 instance
                
+            time.sleep(40) 
             current_instances = ec2.instances.filter(Filters=[
               {"Name": "tag:Name",
                "Values":[_componentname]}])
@@ -402,7 +418,7 @@ def delete_component_info(session: Session, _username: str, _componentname: str)
     vbox = virtualbox.VirtualBox()        
         
     # Delete for vb
-    if component_info.type == "virtualbox":
+    if component_info.resource == "virtualbox":
         vm = vbox.find_machine(_componentname)
         vm.remove(delete=True) # For destroying an vb instance
         session.delete(component_info)
@@ -410,7 +426,7 @@ def delete_component_info(session: Session, _username: str, _componentname: str)
         message = {"message": "{} VB Instance Destroyed.".format(_componentname)}
     
     # Delete for aws
-    elif component_info.type == "aws":
+    elif component_info.resource == "aws":
         ec2.instances.filter(Filters=[{
            "Name": "tag:Name",
            "Values": [_componentname]}]).terminate() # For terminating an specfic ec2 instance
@@ -419,4 +435,3 @@ def delete_component_info(session: Session, _username: str, _componentname: str)
         message = {"message": "{} AWS Instance Destroyed.".format(_componentname)}
 
     return message
-  

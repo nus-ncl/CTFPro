@@ -29,55 +29,6 @@ Setup [awscli](https://github.com/aws/aws-cli/tree/v2).
 aws configure
 ```
 
-Setup [local_mysql_db].
-
-```bash
-sudo mysql
-
-CREATE USER 'sammy'@'localhost' IDENTIFIED BY 'password';
-
-GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'sammy'@'localhost' WITH GRANT OPTION;
-
-FLUSH PRIVILEGES;
-
-exit
-
-
-# Now log in as sammy 
-
-mysql -u sammy -p   # Password is password
-
-CREATE DATABASE ncl;
-
-use ncl;
-
-create table users (
-username varchar(45) NOT NULL PRIMARY KEY, 
-password varchar(45) NOT NULL,
-email varchar(45) NOT NULL, 
-institution varchar(45) NOT NULL
-);
-
-INSERT INTO users VALUE ("billy", "password", "billy@ncl.com", "NCL");
-
-INSERT INTO users VALUE ("axe", "password", "axe@ncl.com", "NCL");
-
-create table component (
-component_id int AUTO_INCREMENT PRIMARY KEY, 
-type varchar(45) NOT NULL, 
-hostname varchar(45) NOT NULL,
-state varchar(45) NOT NULL,
-URL_access varchar(45) NOT NULL, 
-username varchar(45) NOT NULL,
-CONSTRAINT fk_name
-FOREIGN KEY (username) 
-        REFERENCES users(username)
-);
-
-exit
-
-```
-
 
 ### Usage
 
