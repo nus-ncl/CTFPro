@@ -24,6 +24,7 @@ class componentsInfo(Base):
     component_id = Column(Integer, index=True, primary_key=True)
     type = Column(String)
     hostname = Column(String)
+    resource = Column(String)
     URL_access = Column(String)
     username = Column(String)
     state = Column(String)
