@@ -50,10 +50,10 @@ Vagrant.configure("2") do |config|
                 ami_ver = "ami-0724bb99b655fd0a0"
                
               elsif server['type'] == "challenge"
-                ami_ver = "ami-0fb653ca2d3203ac1" # placeholder is just ubuntu 
+                ami_ver = "ami-055d15d9cfddf7bd3" # placeholder is just ubuntu 
                 
               elsif server['type'] == "monitoring"
-                ami_ver = "ami-0fb653ca2d3203ac1" # placeholder is just ubuntu 
+                ami_ver = "ami-055d15d9cfddf7bd3" # placeholder is just ubuntu 
               end # server['type']
 
               srv.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
